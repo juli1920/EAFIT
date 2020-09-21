@@ -21,8 +21,16 @@ public class Point{
     public double getY(){
         return this.y;
     }
+    
+    public void setX(double x){
+        this.x = x;
+    }
 
-    public double distance(Point p2){
-        return Math.sqrt(Math.pow(this.x-p2.getX(), 2) + Math.pow(this.y-p2.getY(), 2));
+    public void setY(double y){
+        this.y = y;
+    }
+    
+    public static double distancia(Point p2, Point p1){
+        return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY()-p2.getY(), 2));
     }
 }

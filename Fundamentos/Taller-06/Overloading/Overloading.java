@@ -1,19 +1,19 @@
 package Overloading;
 
 public class Overloading {
-    void mostrar(int i){
-        System.out.println("Se ha ingresado un int");
+    public static void mostrar(int i){
+        System.out.println("Se ha ingresado un entero");
     }
 
-    public void mostrar(double i){
+    public static void mostrar(double i){
         System.out.println("Se ha ingresado un double");
     }
 
     public static void mostrar(String i){
-        System.out.println("Se ha ingresado un String");
+        System.out.println("Se ha ingresado un string");
     }
 
     public static void mostrar(char i){
-        System.out.println("Se ha ingresado un char");
+        System.out.println("Se ha ingresado un caracter");
     }
 }
