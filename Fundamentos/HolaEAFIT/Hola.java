@@ -1,4 +1,4 @@
-package Fundamentos.HolaEAFIT;
+package HolaEAFIT;
 
 public class Hola {
     public static void main(String[] args) {
