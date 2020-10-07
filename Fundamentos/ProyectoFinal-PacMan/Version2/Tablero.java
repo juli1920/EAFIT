@@ -67,6 +67,9 @@ public class Tablero {
                 else if(x == ' '){
                     System.out.print(Colors.ANSI_BLACK+x+Colors.ANSI_RESET);
                 }
+                else if(x == '@'){
+                    System.out.print(Colors.ANSI_BLACK+x+Colors.ANSI_RESET);
+                }
 
             }
             System.out.println();
@@ -94,6 +97,9 @@ public class Tablero {
                 else if(x == ' '){
                     System.out.print(Colors.ANSI_BLACK+x+Colors.ANSI_RESET);
                 }
+                else if(x == '@'){
+                    System.out.print(Colors.ANSI_BLACK+x+Colors.ANSI_RESET);
+                }
 
             }
             System.out.println();
@@ -101,5 +107,3 @@ public class Tablero {
     }
 
 }
-
-//TODO METODO DE LLENADO DE LA MATRIZ - LEER EL ARCHVIO CON EL SCANNER
