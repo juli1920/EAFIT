@@ -19,15 +19,18 @@ public class Tablero {
         System.out.println("Tablero creado");
         this.tablero = new Celda[numFilas][numCols];
 
+        inputfile.nextLine();
+
         for(int i = 0; i<numFilas; i++){
+            String line = inputfile.nextLine();
+            char f = 'd';
             for (int j = 0; j<numCols; j++){
-                char x = inputfile.next().charAt(0);
+                char x = line.charAt(j);
                 if(x == '*'){
                     tablero[i][j] = new Celda(true, false, '*');
                 } else if(x == ' ') {
                     tablero[i][j] = new Celda(false, false, ' ');
-                }
-                else {
+                } else {
                     tablero[i][j] = new Celda(false, true, 'O');
                 }
             }
@@ -36,6 +39,7 @@ public class Tablero {
 
     public void setCelda(int x, int y, Caracter per){
         this.tablero[x][y].per = per;
+        this.tablero[x][y].setCara(per);
     }
 
     public void setCelda(int x, int y, char representacion){

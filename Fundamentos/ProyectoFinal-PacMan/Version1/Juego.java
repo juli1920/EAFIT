@@ -23,18 +23,19 @@ public class Juego {
     public void jugar(){
         // ----- variables -------
         Scanner in = new Scanner(System.in), opciones = new Scanner(System.in);
-        int vida;
+        int vida = 0;
         Pacman pacman = null;
         assert inputfile != null;
         Tablero tablero = new Tablero(inputfile);
+        int turno = 1;
+        int vidaPerdida = 0;
         // ----- variables -------
 
         // ----- Procesamiento de los datos inciales -------
         String s = inputfile.nextLine();
 
+        //Procesamiento de PacMan
         if(s.charAt(0) == 'P') {
-
-
             while (true) {
                 try {
                     System.out.println("Cuanta vida tiene pacman? ");
@@ -45,25 +46,41 @@ public class Juego {
                 }
             }
 
-            int x = s.charAt(2);
-            int y = s.charAt(4);
+            int x = Integer.parseInt(String.valueOf(s.charAt(2)));
+            int y = Integer.parseInt(String.valueOf(s.charAt(4)));
             pacman = new Pacman(1, new Posicion(x, y), vida);
             tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), pacman);
         }
 
+        while (true) {
+            try {
+                System.out.println("Cuanta vida perderá pacman cada 10 turnos? ");
+                vidaPerdida = in.nextInt();
+                break;
+            } catch (InputMismatchException ignored) {
+                System.out.println("Escriba un numero entero");
+            }
+        }
+
         tablero.dibujarTablero();
+        System.out.println("Turno: 1");
+        System.out.println("Vida: "+ pacman.getPuntosVida());
         // ----- Procesamiento de los datos inciales -------
 
         // ----- Inicio del juego -------
         boolean salir = false;
-        while(salir){
+        while(!salir){
+            System.out.println();
+            turno++;
+
             char movimiento;
 
             while (true) {
                 try {
-                    System.out.print("A donde te quieres mover? (N - arriba, S - abajo, E - derecha, W - izquierda): ");
-                    movimiento = opciones.next().charAt(0);
                     while (true){
+                        System.out.print("A donde te quieres mover? (N - arriba, S - abajo, E - derecha, W - izquierda): ");
+                        movimiento = opciones.next().charAt(0);
+                        movimiento = Character.toUpperCase(movimiento);
                         if(movimiento != 'N' && movimiento != 'S' && movimiento != 'E' && movimiento != 'W'){
                             System.out.println("\n Ingresa una de las opciones!");
                         }
@@ -77,26 +94,72 @@ public class Juego {
                 }
             }
 
+            System.out.println();
             movimiento = Character.toLowerCase(movimiento);
+
+            //--- variables ---
+            Celda next;
+            int nX = 0;
+            int nY = 0;
+            //--- variables ---
+
             switch (movimiento){
                 case 'n':
-                    if(tablero.getCelda(pacman.posicion.getX(), (pacman.posicion.getY())+1).car == '*'){
-                        System.out.println("La celda es un muro, perdiste tu turno");
-                    }
+                    nX = pacman.posicion.getX()-1;
+                    nY = (pacman.posicion.getY());
                     break;
                 case 's':
-
+                    nX = pacman.posicion.getX()+1;
+                    nY = (pacman.posicion.getY());
                     break;
                 case 'e':
-
+                    nX = (pacman.posicion.getX());
+                    nY = pacman.posicion.getY()+1;
                     break;
                 case 'w':
-
+                    nX = (pacman.posicion.getX());
+                    nY = pacman.posicion.getY()-1;
                     break;
+                default:
+            }
+
+            next = tablero.getCelda(nX, nY);
+
+            if(next.car == '*'){
+                System.out.println("La celda es un muro, perdiste tu turno");
+            }
+            else if(next.car == ' '){
+                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+                tablero.setCelda(nX, nY, pacman);
+                pacman.posicion.setX(nX);
+                pacman.posicion.setY(nY);
+            }
+            else if(next.car == 'O'){
+                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+                tablero.setCelda(nX, nY, pacman);
+                pacman.posicion.setX(nX);
+                pacman.posicion.setY(nY);
+
+                System.out.println("Ganaste el juego!");
+                salir = true;
             }
 
 
             tablero.dibujarTablero();
+            System.out.println("Turno: "+turno);
+            System.out.println("Vida: "+ pacman.getPuntosVida());
+            System.out.println();
+
+            if(turno%10==0){
+                vida -= vidaPerdida;
+            }
+
+            if(vida <= 0){
+                System.out.println("Perdiste! Vida agotada");
+                break;
+            }
         }
     }
 }
+
+//TODO COLOR A PERDER, GANAR, PERDER TURNO
