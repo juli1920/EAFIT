@@ -1,8 +1,16 @@
 public class Arepita extends Caracter{
-    protected boolean esExplosiva;
+    protected boolean explosiva;
 
-    public Arepita(int tipo, Posicion posicion, boolean esExplosiva) {
+    public Arepita(int tipo, Posicion posicion, boolean Explosiva) {
         super(tipo, posicion, '@');
-        this.esExplosiva = esExplosiva;
+        this.explosiva = Explosiva;
+    }
+
+    public boolean isExplosiva() {
+        return explosiva;
+    }
+
+    public void setExplosiva(boolean explosiva) {
+        this.explosiva = explosiva;
     }
 }

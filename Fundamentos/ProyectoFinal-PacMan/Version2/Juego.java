@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
@@ -100,50 +99,49 @@ public class Juego {
 
             //--- variables ---
             Celda next;
-            int nX = 0;
-            int nY = 0;
+            int nX = pacman.posicion.getX();
+            int nY = pacman.posicion.getY();
             //--- variables ---
 
             switch (movimiento){
                 case 'n':
-                    nX = pacman.posicion.getX()-1;
-                    nY = (pacman.posicion.getY());
+                    nX -= 1;
                     break;
                 case 's':
-                    nX = pacman.posicion.getX()+1;
-                    nY = (pacman.posicion.getY());
+                    nX += 1;
                     break;
                 case 'e':
-                    nX = (pacman.posicion.getX());
-                    nY = pacman.posicion.getY()+1;
+                    nY += 1;
                     break;
                 case 'w':
-                    nX = (pacman.posicion.getX());
-                    nY = pacman.posicion.getY()-1;
+                    nY -= 1;
                     break;
                 default:
             }
 
             next = tablero.getCelda(nX, nY);
 
-            if(next.car == '*'){
+            if(next.letra == '*'){
                 System.out.println(Colors.ANSI_CYAN+"La celda es un muro, perdiste tu turno"+ Colors.ANSI_RESET);
             }
-            else if(next.car == ' '){
+            else if(next.letra == ' ' || next.letra == 'O' || next.letra == '@'){
                 tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+
+                if(next.letra == 'O'){
+                    salir = true;
+                    gano = true;
+                }
+                else if(next.letra == '@'){
+                   Arepita ar = (Arepita) next.getPersonaje();
+
+                   vida += ar.explosiva ? -5 : 1;
+
+                   pacman.setPuntosVida(vida);
+                }
+
                 tablero.setCelda(nX, nY, pacman);
                 pacman.posicion.setX(nX);
                 pacman.posicion.setY(nY);
-            }
-            else if(next.car == 'O'){
-                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
-                tablero.setCelda(nX, nY, pacman);
-                pacman.posicion.setX(nX);
-                pacman.posicion.setY(nY);
-
-
-                salir = true;
-                gano = true;
             }
 
             if(turno%10==0){

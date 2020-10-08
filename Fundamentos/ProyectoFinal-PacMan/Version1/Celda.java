@@ -1,25 +1,25 @@
 public class Celda {
     protected boolean esMuro;
     protected boolean esSalida;
-    protected char car;
-    protected Caracter per;
+    protected char letra;
+    protected Caracter personaje;
 
-    public Celda(boolean esMuro, boolean esSalida, char car){
+    public Celda(boolean esMuro, boolean esSalida, char letra){
         this.esMuro = esMuro;
         this.esSalida = esSalida;
-        this.car = car;
+        this.letra = letra;
     }
 
     public char caracterCelda(){
-        return car;
+        return letra;
     }
 
-    public Caracter getCara() {
-        return per;
+    public Caracter getCaracter(){
+        return personaje;
     }
 
     public void setCara(Caracter cara) {
-        this.per = cara;
-        car = per.representacion;
+        this.personaje = cara;
+        letra = personaje.representacion;
     }
 }

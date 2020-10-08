@@ -1,7 +1,3 @@
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Tablero {
@@ -24,7 +20,6 @@ public class Tablero {
 
         for(int i = 0; i<numFilas; i++){
             String line = inputfile.nextLine();
-            char f = 'd';
             for (int j = 0; j<numCols; j++){
                 char x = line.charAt(j);
                 if(x == '*'){
@@ -39,12 +34,12 @@ public class Tablero {
     }
 
     public void setCelda(int x, int y, Caracter per){
-        this.tablero[x][y].per = per;
+        this.tablero[x][y].personaje = per;
         this.tablero[x][y].setCara(per);
     }
 
     public void setCelda(int x, int y, char representacion){
-        this.tablero[x][y].car = representacion;
+        this.tablero[x][y].letra = representacion;
     }
 
     public Celda getCelda(int x, int y){
@@ -55,6 +50,7 @@ public class Tablero {
         for(int i = 0; i<numFilas; i++){
             for (int j = 0; j<numCols; j++){
                 char x = tablero[i][j].caracterCelda();
+
                 if(x == '*'){
                     System.out.print(Colors.ANSI_BLUE+x+Colors.ANSI_RESET);
                 }
@@ -69,9 +65,10 @@ public class Tablero {
                 }
 
             }
-            System.out.println();
+            System.out.println(); //Hacer salto
         }
     }
+
 
     public void dibujarTablero(boolean gano){
         for(int i = 0; i<numFilas; i++){
@@ -82,7 +79,7 @@ public class Tablero {
                 }
                 else if (x == '^'){
                     if(gano){
-                        System.out.print(Colors.ANSI_WHITE_BACKGROUND+Colors.ANSI_YELLOW+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
+                        System.out.print(Colors.ANSI_YELLOW_BACKGROUND+Colors.ANSI_WHITE+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
                     }
                     else{
                         System.out.print(Colors.ANSI_RED_BACKGROUND+Colors.ANSI_WHITE+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);

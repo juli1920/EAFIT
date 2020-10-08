@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
@@ -12,11 +11,10 @@ public class Juego {
         this.inputfile = null;
 
         try {
-            inputfile = new Scanner(new File(path));
+            inputfile = new Scanner(new File(path)); //System.in
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
         }
-
 
     }
 
@@ -26,7 +24,7 @@ public class Juego {
         int vida = 0;
         Pacman pacman = null;
         assert inputfile != null;
-        Tablero tablero = new Tablero(inputfile);
+        Tablero tablero = new Tablero(inputfile); //Constructor tablero
         int turno = 1;
         int vidaPerdida;
         boolean gano = false;
@@ -83,7 +81,7 @@ public class Juego {
                         movimiento = opciones.next().charAt(0);
                         movimiento = Character.toUpperCase(movimiento);
                         if(movimiento != 'N' && movimiento != 'S' && movimiento != 'E' && movimiento != 'W'){
-                            System.out.println("\n Ingresa una de las opciones!");
+                            System.out.println("\nIngresa una de las opciones!");
                         }
                         else {
                             break;
@@ -126,21 +124,20 @@ public class Juego {
 
             next = tablero.getCelda(nX, nY);
 
-            if(next.car == '*'){
+            if(next.letra == '*'){
                 System.out.println(Colors.ANSI_CYAN+"La celda es un muro, perdiste tu turno"+ Colors.ANSI_RESET);
             }
-            else if(next.car == ' '){
+            else if(next.letra == ' '){
                 tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
                 tablero.setCelda(nX, nY, pacman);
                 pacman.posicion.setX(nX);
                 pacman.posicion.setY(nY);
             }
-            else if(next.car == 'O'){
+            else if(next.letra == 'O'){
                 tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
                 tablero.setCelda(nX, nY, pacman);
                 pacman.posicion.setX(nX);
                 pacman.posicion.setY(nY);
-
 
                 salir = true;
                 gano = true;
