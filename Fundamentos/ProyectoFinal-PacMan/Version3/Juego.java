@@ -11,20 +11,21 @@ public class Juego {
         this.inputfile = null;
 
         try {
-            inputfile = new Scanner(new File(path)); //System.in
+            inputfile = new Scanner(new File(path));
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
         }
 
+
     }
 
-    public void jugar() {
+    public void jugar(){
         // ----- variables -------
         Scanner in = new Scanner(System.in), opciones = new Scanner(System.in);
         int vida = 0;
         Pacman pacman = null;
         assert inputfile != null;
-        Tablero tablero = new Tablero(inputfile); //Constructor tablero
+        Tablero tablero = new Tablero(inputfile);
         int turno = 1;
         int vidaPerdida;
         boolean gano = false;
@@ -69,7 +70,6 @@ public class Juego {
         // ----- Inicio del juego -------
         boolean salir = false;
         while(!salir){
-
             System.out.println();
             turno++;
 
@@ -82,7 +82,7 @@ public class Juego {
                         movimiento = opciones.next().charAt(0);
                         movimiento = Character.toUpperCase(movimiento);
                         if(movimiento != 'N' && movimiento != 'S' && movimiento != 'E' && movimiento != 'W'){
-                            System.out.println("\nIngresa una de las opciones!");
+                            System.out.println("\n Ingresa una de las opciones!");
                         }
                         else {
                             break;
@@ -99,26 +99,22 @@ public class Juego {
 
             //--- variables ---
             Celda next;
-            int nX = 0;
-            int nY = 0;
+            int nX = pacman.posicion.getX();
+            int nY = pacman.posicion.getY();
             //--- variables ---
 
             switch (movimiento){
                 case 'n':
-                    nX = pacman.posicion.getX()-1;
-                    nY = (pacman.posicion.getY());
+                    nX -= 1;
                     break;
                 case 's':
-                    nX = pacman.posicion.getX()+1;
-                    nY = (pacman.posicion.getY());
+                    nX += 1;
                     break;
                 case 'e':
-                    nX = (pacman.posicion.getX());
-                    nY = pacman.posicion.getY()+1;
+                    nY += 1;
                     break;
                 case 'w':
-                    nX = (pacman.posicion.getX());
-                    nY = pacman.posicion.getY()-1;
+                    nY -= 1;
                     break;
                 default:
             }
@@ -128,20 +124,24 @@ public class Juego {
             if(next.letra == '*'){
                 System.out.println(Colors.ANSI_CYAN+"La celda es un muro, perdiste tu turno"+ Colors.ANSI_RESET);
             }
-            else if(next.letra == ' '){
+            else if(next.letra == ' ' || next.letra == 'O' || next.letra == '@'){
                 tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
-                tablero.setCelda(nX, nY, pacman);
-                pacman.posicion.setX(nX);
-                pacman.posicion.setY(nY);
-            }
-            else if(next.letra == 'O'){
-                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
-                tablero.setCelda(nX, nY, pacman);
-                pacman.posicion.setX(nX);
-                pacman.posicion.setY(nY);
 
-                salir = true;
-                gano = true;
+                if(next.letra == 'O'){
+                    salir = true;
+                    gano = true;
+                }
+                else if(next.letra == '@'){
+                   Arepita ar = (Arepita) next.getPersonaje();
+
+                   vida += ar.explosiva ? -5 : 1;
+
+                   pacman.setPuntosVida(vida);
+                }
+
+                tablero.setCelda(nX, nY, pacman);
+                pacman.posicion.setX(nX);
+                pacman.posicion.setY(nY);
             }
 
             if(turno%10==0){
@@ -175,7 +175,6 @@ public class Juego {
                 System.out.println(Colors.ANSI_RED_BACKGROUND + Colors.ANSI_BLACK+Colors.ANSI_BOLD+"Perdiste! Vida agotada"+Colors.ANSI_RESET);
                 break;
             }
-
         }
 
         System.out.println(Colors.ANSI_CYAN_BACKGROUND+Colors.ANSI_BLACK+"  Fin del juego  "+Colors.ANSI_RESET);
