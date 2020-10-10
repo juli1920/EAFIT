@@ -79,7 +79,7 @@ public class Tablero {
 
                 if (x == '^'){
                     if(gano){
-                        System.out.print(Colors.ANSI_YELLOW+Colors.ANSI_WHITE+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
+                        System.out.print(Colors.ANSI_YELLOW_BACKGROUND+Colors.ANSI_BLACK+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
                     } else{
                         System.out.print(Colors.ANSI_RED_BACKGROUND+Colors.ANSI_WHITE+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
                     }
@@ -260,7 +260,7 @@ class BFS {
             TimeUnit.MILLISECONDS.sleep(500);
         }
 
-        for(int i = tablero.numFilas-1; i>=0; i--){
+        for(int i = a.length-1; i>=0; i--){
             movimientos.push(a[i]);
         }
 

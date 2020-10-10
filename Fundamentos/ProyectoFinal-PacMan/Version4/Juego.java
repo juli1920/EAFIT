@@ -93,6 +93,7 @@ public class Juego {
             }
 
             tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+            tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), (String) null);
             tablero.setCelda(nX, nY, pacman);
             pacman.posicion.setX(nX);
             pacman.posicion.setY(nY);
@@ -101,12 +102,12 @@ public class Juego {
 
             if(gano){
                 tablero.dibujarTablero(true);
-                TimeUnit.MILLISECONDS.sleep(time);
             }
             else{
                 tablero.dibujarTablero(tablero, true);
-                TimeUnit.MILLISECONDS.sleep(time);
             }
+
+            TimeUnit.MILLISECONDS.sleep(time);
 
 
             System.out.println();

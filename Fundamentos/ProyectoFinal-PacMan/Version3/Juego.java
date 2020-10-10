@@ -180,9 +180,7 @@ public class Juego {
 
             tablero.dibujarTablero();
             TimeUnit.SECONDS.sleep(1); //COMANDO PARA ESPERAR SEGUNDOS REALES
-
-            System.out.println(pacman.posicion.getX());
-            System.out.println(pacman.posicion.getY());
+            
 
             //Procesado de fantasmas
             if(!gano && !salir){
