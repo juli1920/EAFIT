@@ -6,6 +6,14 @@ public class Tablero {
     private final int numCols;
     private Celda[][] tablero;
 
+    public int getNumFilas() {
+        return numFilas;
+    }
+
+    public int getNumCols() {
+        return numCols;
+    }
+
     public Tablero(Scanner inputfile) {
         Scanner in = new Scanner(System.in);
 
@@ -37,7 +45,6 @@ public class Tablero {
 
                         explosivo = (valorDado == 1);
 
-                        System.out.println("Es explosivo?: "+explosivo);
 
                         tablero[i][j].setCara(new Arepita(2, new Posicion(i, j), explosivo));
                     }
@@ -105,6 +112,9 @@ public class Tablero {
         }
         else if(x == '@'){
             System.out.print(Colors.ANSI_GREEN+x+Colors.ANSI_RESET);
+        }
+        else if(x == 'W'){
+            System.out.print(Colors.ANSI_PURPLE+x+Colors.ANSI_RESET);
         }
     }
 

@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 public class Juego {
     Scanner inputfile;
@@ -19,16 +21,15 @@ public class Juego {
 
     }
 
-    public void jugar(){
+    public void jugar() throws InterruptedException {
         // ----- variables -------
-        Scanner in = new Scanner(System.in), opciones = new Scanner(System.in);
-        int vida = 0;
-        Pacman pacman = null;
+        Scanner in = new Scanner(System.in);
         assert inputfile != null;
         Tablero tablero = new Tablero(inputfile);
+        Pacman pacman = null;
         int turno = 1;
-        int vidaPerdida;
         boolean gano = false;
+        boolean salir = false;
         // ----- variables -------
 
         // ----- Procesamiento de los datos inciales -------
@@ -36,82 +37,86 @@ public class Juego {
 
         //Procesamiento de PacMan
         if(s.charAt(0) == 'P') {
-            while (true) {
-                try {
-                    System.out.println("Cuanta vida tiene pacman? ");
-                    vida = in.nextInt();
-                    break;
-                } catch (InputMismatchException ignored) {
-                    System.out.println("Escriba un numero entero");
-                }
-            }
-
             int x = Integer.parseInt(String.valueOf(s.charAt(2)));
             int y = Integer.parseInt(String.valueOf(s.charAt(4)));
-            pacman = new Pacman(1, new Posicion(x, y), vida);
+            pacman = new Pacman(1, new Posicion(x, y), 0);
             tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), pacman);
         }
 
-        while (true) {
-            try {
-                System.out.println("Cuanta vida perderá pacman cada 10 turnos? ");
-                vidaPerdida = in.nextInt();
-                break;
-            } catch (InputMismatchException ignored) {
-                System.out.println("Escriba un numero entero");
-            }
-        }
 
-        tablero.dibujarTablero();
-        System.out.println("Turno: 1");
-        System.out.println("Vida: "+ pacman.getPuntosVida());
+        //Creacion del BFS
+        assert pacman != null;
+        new BFS(tablero.numFilas, tablero.numCols, tablero);
+        Stack<Posicion> mov =  BFS.bfs(tablero, pacman.posicion);
+        BFS.imprimirPadre();
+        BFS.imprimirDistancias();
+        Stack<Posicion> moverse = BFS.pintarCamino(tablero, mov);
+
+        //Primer turno
+        for(int hh = 0; hh<30; hh++){
+            System.out.println();
+        }
+        tablero.dibujarTablero(tablero, true);
+
         // ----- Procesamiento de los datos inciales -------
-        BFS bf = new BFS(tablero.numFilas, tablero.numCols);
-        BFS.bfs(tablero, pacman.posicion);
+
 
         // ----- Inicio del juego -------
-        /*
-        boolean salir = false;
+
+
         while(!salir){
+            for(int hh = 0; hh<30; hh++){
+                System.out.println();
+            }
+
             System.out.println();
             turno++;
 
+            Posicion siguiente = moverse.pop();
+
+            int nX = siguiente.getX();
+            int nY = siguiente.getY();
 
 
 
-            if(turno%10==0){
-                vida -= vidaPerdida;
-                pacman.setPuntosVida(vida);
+            Celda next = tablero.getCelda(nX, nY);
+
+
+            if(next.letra == 'O'){
+                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+                tablero.setCelda(nX, nY, pacman);
+                pacman.posicion.setX(nX);
+                pacman.posicion.setY(nY);
+
+                salir = true;
+                gano = true;
             }
 
+            tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+            tablero.setCelda(nX, nY, pacman);
+            pacman.posicion.setX(nX);
+            pacman.posicion.setY(nY);
+
+            int time = 750;
 
             if(gano){
                 tablero.dibujarTablero(true);
-            }
-            else if(vida <= 0){
-                tablero.dibujarTablero(false);
+                TimeUnit.MILLISECONDS.sleep(time);
             }
             else{
-                tablero.dibujarTablero();
+                tablero.dibujarTablero(tablero, true);
+                TimeUnit.MILLISECONDS.sleep(time);
             }
 
-            System.out.println("Turno: "+turno);
 
-
-            System.out.println("Vida: "+ pacman.getPuntosVida());
             System.out.println();
 
             if(gano){
                 System.out.println(Colors.ANSI_PURPLE+Colors.ANSI_BOLD+"Ganaste "+Colors.ANSI_RESET+Colors.ANSI_GREEN+Colors.ANSI_BOLD+"el"+Colors.ANSI_RESET+Colors.ANSI_CYAN+Colors.ANSI_BOLD+" juego!"+Colors.ANSI_RESET);
             }
-
-
-            if(vida <= 0 && !gano){
-                System.out.println(Colors.ANSI_RED_BACKGROUND + Colors.ANSI_BLACK+Colors.ANSI_BOLD+"Perdiste! Vida agotada"+Colors.ANSI_RESET);
-                break;
-            }
         }
-        */
+
+
         System.out.println(Colors.ANSI_CYAN_BACKGROUND+Colors.ANSI_BLACK+"  Fin del juego  "+Colors.ANSI_RESET);
     }
 }

@@ -1,15 +1,12 @@
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Tablero {
     final int numFilas;
     final int numCols;
     private Celda[][] tablero;
     protected static int empties = 0;
-    protected static Posicion meta;
+    Posicion meta;
 
     public Tablero(Scanner inputfile) {
         Scanner in = new Scanner(System.in);
@@ -26,7 +23,6 @@ public class Tablero {
 
         for (int i = 0; i < numFilas; i++) {
             String line = inputfile.nextLine();
-            char f = 'd';
             for (int j = 0; j < numCols; j++) {
                 char x = line.charAt(j);
                 if (x == '*') {
@@ -51,6 +47,12 @@ public class Tablero {
     public void setCelda(int x, int y, char representacion){
         this.tablero[x][y].letra = representacion;
     }
+
+    public void setCelda(int x, int y, String color){
+        this.tablero[x][y].color = color;
+    }
+
+
 
     public Celda getCelda(int x, int y){
         return tablero[x][y];
@@ -88,6 +90,26 @@ public class Tablero {
         }
     }
 
+    public void dibujarTablero(Tablero tablero, boolean camino){
+        for(int i = 0; i<numFilas; i++){
+            for (int j = 0; j<numCols; j++){
+                char x = tablero.getCelda(i, j).caracterCelda();
+
+                if (x == '^' && tablero.getCelda(i, j).color != null){
+                    if(camino){
+                        System.out.print(Colors.ANSI_YELLOW+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
+                    }
+                    else{
+                        System.out.print(tablero.getCelda(i, j).color);
+                    }
+
+                }
+                else PrintExtras2(x, tablero.getCelda(i, j));
+            }
+            System.out.println();
+        }
+    }
+
     private void PrintExtras(char x) {
         if(x == '*'){
             System.out.print(Colors.ANSI_BLUE+x+Colors.ANSI_RESET);
@@ -95,7 +117,23 @@ public class Tablero {
             System.out.print(Colors.ANSI_RED+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
         }
         else if(x == ' '){
-            System.out.print(Colors.ANSI_BLACK+x+Colors.ANSI_RESET);
+            System.out.print(x);
+        }
+    }
+
+    private void PrintExtras2(char x, Celda cel) {
+        if(x == '*'){
+            System.out.print(Colors.ANSI_BLUE+x+Colors.ANSI_RESET);
+        } else if(x == 'O'){
+            System.out.print(Colors.ANSI_RED+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
+        }
+        else if(x == ' '){
+            if(cel.color != null){
+                System.out.print(cel.color);
+            }
+            else{
+                System.out.print(x);
+            }
         }
     }
 
@@ -107,28 +145,30 @@ public class Tablero {
         Tablero.empties = empties;
     }
 
-    public static Posicion getMeta() {
+    public Posicion getMeta() {
         return meta;
     }
 
     public void setMeta(Posicion meta) {
-        Tablero.meta = meta;
+        this.meta = meta;
     }
 }
 
 class BFS {
+    static Tablero tablero;
     private static int[][] d;
     private static Posicion[][] padre;
     int size;
     static int[] xCambio = {1, 0, 0, -1};
     static int[] yCambio = {0, 1, -1, -0};
 
-    public BFS(int n, int s){
-        d = new int[n][s];
-        padre = new Posicion[n][s];
+    public BFS(int n, int s, Tablero tablero){
+        BFS.d = new int[n][s];
+        BFS.padre = new Posicion[n][s];
+        BFS.tablero = tablero;
     }
 
-    public static void bfs(Tablero a, Posicion fuente){
+    public static Stack<Posicion> bfs(Tablero a, Posicion fuente) throws InterruptedException {
         for (int i = 0; i < d.length; ++i){
             for(int j = 0; j<d[0].length; j++){
                 d[i][j] = -1;
@@ -141,8 +181,22 @@ class BFS {
         d[fuente.getX()][fuente.getY()] = 0;
         padre[fuente.getX()][fuente.getY()] = new Posicion(0, 0);
 
+        //Primera Pintada
+        tablero.dibujarTablero();
+        TimeUnit.SECONDS.sleep(1);
+
+
         while(q.size() > 0){
             Posicion cur = q.element();
+
+            //Pintar cada casilla
+            char ini = tablero.getCelda(cur.getX(), cur.getY()).letra;
+            String ini2 = Colors.ANSI_RED_BACKGROUND+Colors.ANSI_BLACK+ini+Colors.ANSI_RESET;
+            tablero.setCelda(cur.getX(), cur.getY(), ini2);
+            //tablero.dibujarTablero(tablero, false);
+            //TimeUnit.MILLISECONDS.sleep(250);
+
+
             q.remove();
             for(int i = 0; i<4; i++){
                 int nX = cur.getX() + xCambio[i];
@@ -150,6 +204,11 @@ class BFS {
                 char next = a.getCelda(nX, nY).letra;
 
                 if(next == '*') continue;
+
+                //Pintar cada casilla
+                ini2 = Colors.ANSI_RED_BACKGROUND+Colors.ANSI_BLACK+next+Colors.ANSI_RESET;
+                tablero.setCelda(nX, nY, ini2);
+
 
                 if(d[nX][nY] == -1){
                     d[nX][nY] = d[cur.getX()][cur.getY()]+1;
@@ -164,12 +223,52 @@ class BFS {
             }
         }
 
+        Stack<Posicion> moverse = new Stack<>();
+        Posicion meta = tablero.meta, actual = meta;
 
 
+        for(int i = 0; i<d[meta.getX()][meta.getY()]; i++){
+            moverse.push(actual);
+            actual = padre[actual.getX()][actual.getY()];
+
+        }
+
+        return moverse;
 
     }
 
-    public static void imprimpirDistancias(){
+    public static Stack<Posicion> pintarCamino(Tablero tablero, Stack<Posicion> pos) throws InterruptedException {
+        Stack<Posicion> movimientos = new Stack<>();
+        Posicion[] a = new Posicion[pos.size()];
+
+        int hh= 0;
+        while(!pos.empty()){
+            a[hh] = pos.pop();
+            hh++;
+        }
+
+        for(int i = 0; i<tablero.numFilas; i++){
+            for(int j = 0; j<tablero.numCols; j++){
+                tablero.setCelda(i, j, (String) null);
+            }
+        }
+
+        for(Posicion x : a){
+            String color = Colors.ANSI_GREEN_BACKGROUND+" "+Colors.ANSI_RESET;
+            tablero.setCelda(x.getX(), x.getY(), color);
+            tablero.dibujarTablero(tablero, true);
+            TimeUnit.MILLISECONDS.sleep(500);
+        }
+
+        for(int i = tablero.numFilas-1; i>=0; i--){
+            movimientos.push(a[i]);
+        }
+
+        return movimientos;
+
+    }
+
+    public static void imprimirDistancias(){
         System.out.println("distancias");
         for (int[] ints : d) {
             for (int j = 0; j < d[0].length; j++) {

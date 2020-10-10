@@ -1,9 +1,8 @@
+
 public class Main {
     public static void main(String[] args){
-        int a[] = {1,2,4,5};
-        a = InvertirArreglo.invertir(a);
+        int a[] = {1,2,3,6,10,9,8,7,5};
 
-        InvertirArreglo.imprimir(a);
-        
+        System.out.println(ExcepcionSuma.suma(a));
     }
 }

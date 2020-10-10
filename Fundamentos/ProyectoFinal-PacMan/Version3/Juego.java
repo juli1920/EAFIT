@@ -1,7 +1,10 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Juego {
     Scanner inputfile;
@@ -19,7 +22,7 @@ public class Juego {
 
     }
 
-    public void jugar(){
+    public void jugar() throws InterruptedException {
         // ----- variables -------
         Scanner in = new Scanner(System.in), opciones = new Scanner(System.in);
         int vida = 0;
@@ -62,8 +65,25 @@ public class Juego {
             }
         }
 
+        LinkedList<Fantasma> fantasmas = new LinkedList<>();
+        int indicefantasma = 0;
+        while (inputfile.hasNextLine()){
+            s = inputfile.nextLine();
+            if(s.charAt(0) == 'F') {
+                int x = Integer.parseInt(String.valueOf(s.charAt(2)));
+                int y = Integer.parseInt(String.valueOf(s.charAt(4)));
+                fantasmas.add(new Fantasma(4, new Posicion(x, y), false));
+                tablero.setCelda(fantasmas.get(indicefantasma).posicion.getX(), fantasmas.get(indicefantasma).posicion.getY(), pacman);
+                indicefantasma++;
+            }
+        }
+
+
+
+
         tablero.dibujarTablero();
         System.out.println("Turno: 1");
+        assert pacman != null;
         System.out.println("Vida: "+ pacman.getPuntosVida());
         // ----- Procesamiento de los datos inciales -------
 
@@ -143,6 +163,14 @@ public class Juego {
                 pacman.posicion.setX(nX);
                 pacman.posicion.setY(nY);
             }
+            else if(next.letra == 'W'){
+                tablero.setCelda(pacman.posicion.getX(), pacman.posicion.getY(), ' ');
+                tablero.setCelda(nX, nY, pacman);
+                pacman.posicion.setX(nX);
+                pacman.posicion.setY(nY);
+                gano = false;
+                salir = true;
+            }
 
             if(turno%10==0){
                 vida -= vidaPerdida;
@@ -150,10 +178,131 @@ public class Juego {
             }
 
 
+            tablero.dibujarTablero();
+            TimeUnit.SECONDS.sleep(1); //COMANDO PARA ESPERAR SEGUNDOS REALES
+
+            //Procesado de fantasmas
+            if(!gano && salir){
+                for(int i = 0; i<fantasmas.size(); i++){
+                    int[] adonde = null;
+                    int[] adonde2 = null;
+
+                    Fantasma ya = fantasmas.get(i);
+                    int pacX = pacman.posicion.getX();
+                    int pacY = pacman.posicion.getY();
+
+                    boolean encontrado = false;
+
+                    char letraNow = 'W';
+                    if(pacX == ya.posicion.getX()){
+                        if(pacY > ya.posicion.getY()){ //pacman abajo
+                            for(int j = ya.posicion.getY()+1; j<tablero.getNumCols() && letraNow != '*'; j++){
+                                letraNow = tablero.getCelda(ya.posicion.getX(), j).letra;
+                                if(letraNow == '^'){
+                                    adonde = ya.movimientos[1]; //moverse 1
+                                    adonde2 = ya.movimientos2[1]; // moverse 2
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else{
+                            for(int j = ya.posicion.getY()-1; j>=0 && letraNow != '*'; j--){
+                                letraNow = tablero.getCelda(ya.posicion.getX(), j).letra;
+                                if(letraNow == '^'){
+                                    adonde = ya.movimientos[2];
+                                    adonde2 = ya.movimientos2[2]; // moverse 2
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if(pacY == ya.posicion.getY()){
+                        if(pacX > ya.posicion.getX()){ //pacman a la derecha
+                            for(int j = ya.posicion.getX()+1; j<tablero.getNumFilas() && letraNow != '*'; j++){
+                                letraNow = tablero.getCelda(ya.posicion.getY(), j).letra;
+                                if(letraNow == '^'){
+                                    adonde = ya.movimientos[0];
+                                    adonde2 = ya.movimientos2[0]; // moverse 2
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else{ //pacman izquierda
+                            for(int j = ya.posicion.getX()-1; j>=0 && letraNow != '*'; j--){
+                                letraNow = tablero.getCelda(ya.posicion.getY(), j).letra;
+                                if(letraNow == '^'){
+                                    adonde = ya.movimientos[3];
+                                    adonde2 = ya.movimientos2[3]; // moverse 2
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+
+                    //Si lo encontraron
+                    if(encontrado){
+                        if(ya.posicion.getX()+adonde[0] == pacX && ya.posicion.getY()+adonde[1] == pacY){
+                            tablero.setCelda(ya.posicion.getX(), ya.posicion.getY(), ' ');
+                            tablero.setCelda(ya.posicion.getX()+adonde[0], ya.posicion.getY()+adonde[1], ya);
+                            ya.posicion.setX(ya.posicion.getX()+adonde[0]);
+                            ya.posicion.setY(ya.posicion.getY()+adonde[1]);
+                            gano = false;
+                            salir = true;
+                        }
+                        else if(ya.posicion.getX()+adonde2[0] == pacX && ya.posicion.getY()+adonde2[1] == pacY){
+                            tablero.setCelda(ya.posicion.getX(), ya.posicion.getY(), ' ');
+                            tablero.setCelda(ya.posicion.getX()+adonde2[0], ya.posicion.getY()+adonde2[1], ya);
+                            ya.posicion.setX(ya.posicion.getX()+adonde2[0]);
+                            ya.posicion.setY(ya.posicion.getY()+adonde2[1]);
+                            gano = false;
+                            salir = true;
+                        }
+                        else{
+                            tablero.setCelda(ya.posicion.getX(), ya.posicion.getY(), ' ');
+                            tablero.setCelda(ya.posicion.getX()+adonde2[0], ya.posicion.getY()+adonde2[1], ya);
+                            ya.posicion.setX(ya.posicion.getX()+adonde2[0]);
+                            ya.posicion.setY(ya.posicion.getY()+adonde2[1]);
+                        }
+                    }
+                    else{
+                        //Si fantasma no detecta a pacman
+                        while(true){
+                            Random r = new Random();
+                            int valorDado = r.nextInt(4);
+                            int[] prox = ya.movimientos[valorDado];
+                            int proxX = ya.posicion.getX() + prox[0];
+                            int proxY = ya.posicion.getY() + prox[1];
+                            Celda fantasmaCelda = tablero.getCelda(proxX, proxY);
+
+                            if(fantasmaCelda.letra == ' ' || fantasmaCelda.letra == '@'){
+                                tablero.setCelda(ya.posicion.getX(), ya.posicion.getY(), ' ');
+                                tablero.setCelda(proxX, proxY, ya);
+                                ya.posicion.setX(proxX);
+                                ya.posicion.setY(proxY);
+                                break;
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+
+
+            //Procesado de fantasmas
+
+
             if(gano){
                 tablero.dibujarTablero(true);
             }
-            else if(vida <= 0){
+            else if(vida <= 0 || salir){
                 tablero.dibujarTablero(false);
             }
             else{
@@ -171,8 +320,8 @@ public class Juego {
             }
 
 
-            if(vida <= 0 && !gano){
-                System.out.println(Colors.ANSI_RED_BACKGROUND + Colors.ANSI_BLACK+Colors.ANSI_BOLD+"Perdiste! Vida agotada"+Colors.ANSI_RESET);
+            if(vida <= 0 && !gano || !gano && salir){
+                System.out.println(Colors.ANSI_RED_BACKGROUND + Colors.ANSI_BLACK+Colors.ANSI_BOLD+"Perdiste! Vida agotada o pisaste un fantasma"+Colors.ANSI_RESET);
                 break;
             }
         }
