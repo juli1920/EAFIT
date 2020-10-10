@@ -69,11 +69,11 @@ public class Juego {
         int indicefantasma = 0;
         while (inputfile.hasNextLine()){
             s = inputfile.nextLine();
-            if(s.charAt(0) == 'F') {
+            if(!s.equals("") && s.charAt(0) == 'F') {
                 int x = Integer.parseInt(String.valueOf(s.charAt(2)));
                 int y = Integer.parseInt(String.valueOf(s.charAt(4)));
                 fantasmas.add(new Fantasma(4, new Posicion(x, y), false));
-                tablero.setCelda(fantasmas.get(indicefantasma).posicion.getX(), fantasmas.get(indicefantasma).posicion.getY(), pacman);
+                tablero.setCelda(fantasmas.get(indicefantasma).posicion.getX(), fantasmas.get(indicefantasma).posicion.getY(), fantasmas.get(indicefantasma));
                 indicefantasma++;
             }
         }
@@ -181,8 +181,11 @@ public class Juego {
             tablero.dibujarTablero();
             TimeUnit.SECONDS.sleep(1); //COMANDO PARA ESPERAR SEGUNDOS REALES
 
+            System.out.println(pacman.posicion.getX());
+            System.out.println(pacman.posicion.getY());
+
             //Procesado de fantasmas
-            if(!gano && salir){
+            if(!gano && !salir){
                 for(int i = 0; i<fantasmas.size(); i++){
                     int[] adonde = null;
                     int[] adonde2 = null;
@@ -194,19 +197,20 @@ public class Juego {
                     boolean encontrado = false;
 
                     char letraNow = 'W';
-                    if(pacX == ya.posicion.getX()){
+                    if(pacX == ya.posicion.getX()){ // izquierdaa y derecha
                         if(pacY > ya.posicion.getY()){ //pacman abajo
                             for(int j = ya.posicion.getY()+1; j<tablero.getNumCols() && letraNow != '*'; j++){
                                 letraNow = tablero.getCelda(ya.posicion.getX(), j).letra;
                                 if(letraNow == '^'){
-                                    adonde = ya.movimientos[1]; //moverse 1
+                                    adonde = ya.movimientos[1];
                                     adonde2 = ya.movimientos2[1]; // moverse 2
+
                                     encontrado = true;
                                     break;
                                 }
                             }
                         }
-                        else{
+                        else{ //Pacman izquierda
                             for(int j = ya.posicion.getY()-1; j>=0 && letraNow != '*'; j--){
                                 letraNow = tablero.getCelda(ya.posicion.getX(), j).letra;
                                 if(letraNow == '^'){
@@ -218,21 +222,21 @@ public class Juego {
                             }
                         }
                     }
-                    else if(pacY == ya.posicion.getY()){
-                        if(pacX > ya.posicion.getX()){ //pacman a la derecha
+                    else if(pacY == ya.posicion.getY()){ //arriba y abajo
+                        if(pacX > ya.posicion.getX()){ //pacman abajo
                             for(int j = ya.posicion.getX()+1; j<tablero.getNumFilas() && letraNow != '*'; j++){
-                                letraNow = tablero.getCelda(ya.posicion.getY(), j).letra;
+                                letraNow = tablero.getCelda(j, ya.posicion.getY()).letra;
                                 if(letraNow == '^'){
-                                    adonde = ya.movimientos[0];
-                                    adonde2 = ya.movimientos2[0]; // moverse 2
+                                    adonde = ya.movimientos[1]; //moverse 1
+                                    adonde2 = ya.movimientos2[1]; // moverse 2
                                     encontrado = true;
                                     break;
                                 }
                             }
                         }
-                        else{ //pacman izquierda
+                        else{ //pacman arriba
                             for(int j = ya.posicion.getX()-1; j>=0 && letraNow != '*'; j--){
-                                letraNow = tablero.getCelda(ya.posicion.getY(), j).letra;
+                                letraNow = tablero.getCelda(j, ya.posicion.getY()).letra;
                                 if(letraNow == '^'){
                                     adonde = ya.movimientos[3];
                                     adonde2 = ya.movimientos2[3]; // moverse 2
@@ -300,10 +304,10 @@ public class Juego {
 
 
             if(gano){
-                tablero.dibujarTablero(true);
+                tablero.dibujarTablero(true, false);
             }
             else if(vida <= 0 || salir){
-                tablero.dibujarTablero(false);
+                tablero.dibujarTablero(false, false);
             }
             else{
                 tablero.dibujarTablero();

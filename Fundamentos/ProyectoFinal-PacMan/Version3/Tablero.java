@@ -83,12 +83,15 @@ public class Tablero {
         }
     }
 
-    public void dibujarTablero(boolean gano){
+    public void dibujarTablero(boolean gano, boolean fantasma){
         for(int i = 0; i<numFilas; i++){
             for (int j = 0; j<numCols; j++){
                 char x = tablero[i][j].caracterCelda();
 
-                if (x == '^'){
+                if(x == 'W') {
+                    System.out.print(Colors.ANSI_PURPLE_BACKGROUND+Colors.ANSI_BLACK+ x + Colors.ANSI_RESET);
+                }
+                else if (x == '^'){
                     if(gano){
                         System.out.print(Colors.ANSI_YELLOW+Colors.ANSI_WHITE+Colors.ANSI_BOLD+x+Colors.ANSI_RESET);
                     } else{
